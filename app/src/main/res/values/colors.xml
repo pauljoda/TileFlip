@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="LightBlueBackground">#E3F2FD</color>
+    <color name="DayBackground">#E3F2FD</color>
+    <color name="EveningBackground">#78909C</color>
+    <color name="NightBackground">#424242</color>
+    <color name="TileRed">#EF5350</color>
 </resources>

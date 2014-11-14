@@ -2,7 +2,6 @@
 
     <!-- Base application theme. -->
     <style name="TileFlipTheme" parent="android:Theme.NoTitleBar">
-        <item name="android:background">@color/LightBlueBackground</item>
     </style>
 
 </resources>
