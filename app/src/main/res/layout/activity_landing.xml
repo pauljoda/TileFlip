@@ -16,10 +16,10 @@
             android:textColor="#000000"
             android:textSize="50dp"
             android:id="@+id/textView"
-            android:layout_alignParentTop="true"
+            android:layout_above="@+id/loadingTile"
             android:layout_centerHorizontal="true"/>
 
-    <!-- <davis.tileflip.tile.Tile
+    <davis.tileflip.tile.Tile
             android:id="@+id/loadingTile"
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -28,20 +28,25 @@
             android:layout_gravity="center"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"/>
-           -->
 
+    <com.google.android.gms.common.SignInButton
+            android:layout_width="140dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:id="@+id/sign_in_button"
+            android:layout_below="@+id/loadingTile"
+            android:layout_centerHorizontal="true"/>
 
-            >
-        <davis.tileflip.tile.GameBoard
-                android:id="@+id/gameBoard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"/>
+    <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
+            android:text="Skip"
+            android:background="@drawable/grey_tile"
+            android:id="@+id/skip"
+            android:layout_below="@+id/sign_in_button"
+            android:layout_centerHorizontal="true"/>
 
 
 </RelativeLayout>

@@ -3,26 +3,43 @@ package davis.tileflip.screen;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.plus.Plus;
+import com.google.example.games.basegameutils.BaseGameUtils;
+import davis.tileflip.GameScreen;
 import davis.tileflip.R;
-import davis.tileflip.tile.GameBoard;
+import davis.tileflip.tile.Tile;
+import davis.tileflip.tile.TileStates;
 
-import java.util.Calendar;
 import java.util.Random;
 
-public class LandingScreen implements IScreen {
-    private Activity game;
+public class LandingScreen extends Screen implements IScreen, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    private static int RC_SIGN_IN = 9001;
+    private boolean mResolvingConnectionFailure = false;
+    private boolean mAutoStartSignInFlow = true;
+    private boolean mSignInClicked = false;
 
-    public LandingScreen(Activity parent) {
-        game = parent;
-        onCreate();
+    public LandingScreen(GameScreen parent) {
+        super(parent);
     }
 
     @Override
     public void onCreate() {
         game.setContentView(R.layout.activity_landing);
+
+        game.mGoogleApiClient = new GoogleApiClient.Builder(game)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
+                .build();
 
         View view = game.findViewById(R.id.landingLayout);
         ValueAnimator colorChange = ObjectAnimator.ofInt(view, "backgroundColor", view.getResources().getColor(R.color.DayBackground), getColorForTime());
@@ -30,11 +47,19 @@ public class LandingScreen implements IScreen {
         colorChange.setEvaluator(new ArgbEvaluator());
         colorChange.start();
 
+        SignInButton button = (SignInButton)game.findViewById(R.id.sign_in_button);
+        button.setOnClickListener(new SignInClicker());
+
+        Button button1 = (Button)game.findViewById(R.id.skip);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadMainMenu();
+            }
+        });
+
         final Random r = new Random();
-        GameBoard board = (GameBoard)game.findViewById(R.id.gameBoard);
-        board.setSize(3);
-        board.setColorCount(2);
-        /*final Tile tile = (Tile)game.findViewById(R.id.loadingTile);
+        final Tile tile = (Tile)game.findViewById(R.id.loadingTile);
         tile.setFlipDirection(TileStates.FlipDirection.DOWN);
         tile.setMaxColors(5);
         tile.setOnFlipListener(new Tile.OnFlipListener() {
@@ -59,22 +84,11 @@ public class LandingScreen implements IScreen {
                 tile.flipTile();
             }
         });
-        tile.flipTile();*/
+        tile.flipTile();
     }
 
-
-    public int getColorForTime() {
-        Calendar calendar = Calendar.getInstance();
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        if(hour > 8 && hour < 18) {
-            return game.getResources().getColor(R.color.DayBackground);
-        }
-        else if(hour > 6 && hour < 20) {
-            return game.getResources().getColor(R.color.EveningBackground);
-        }
-        else {
-            return game.getResources().getColor(R.color.NightBackground);
-        }
+    public void loadMainMenu() {
+        game.setCurrentScreen(new MainMenuScreen(game));
     }
 
     @Override
@@ -82,4 +96,44 @@ public class LandingScreen implements IScreen {
         return false;
     }
 
+    @Override
+    public void onConnected(Bundle bundle) {
+        loadMainMenu();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+        if (mResolvingConnectionFailure) {
+            // Already resolving
+            return;
+        }
+        // If the sign in button was clicked or if auto sign-in is enabled,
+        // launch the sign-in flow
+        if (mSignInClicked || mAutoStartSignInFlow) {
+            mAutoStartSignInFlow = false;
+            mSignInClicked = false;
+            mResolvingConnectionFailure = true;
+            if (!BaseGameUtils.resolveConnectionFailure(game, game.mGoogleApiClient, connectionResult, RC_SIGN_IN, game.getResources().getString(R.string.signin_other_error))) {
+                mResolvingConnectionFailure = false;
+            }
+        }
+    }
+
+    public class SignInClicker implements View.OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+            if (view.getId() == R.id.sign_in_button) {
+                // start the asynchronous sign in flow
+                mSignInClicked = true;
+                game.mGoogleApiClient.connect();
+            }
+        }
+    }
 }
