@@ -11,4 +11,9 @@
         <attr name="size" format="integer"/>
         <attr name="maxColors" format="integer"/>
     </declare-styleable>
+
+    <declare-styleable name="TileButton">
+        <attr name="backgroundDrawable" format="reference"/>
+        <attr name="duration" format="integer"/>
+    </declare-styleable>
 </resources>

@@ -1,7 +1,6 @@
 package davis.tileflip.tile;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -15,18 +14,21 @@ import davis.tileflip.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameBoard extends GridLayout implements View.OnLongClickListener, View.OnClickListener{
     private int colorCount;
     private int size;
     public List<Tile> tiles;
 
-    private boolean canClick = true;
+    private boolean canClick = false;
+    private boolean canSingleClick = true;
 
     public interface IGameEventListener {
+        public void initComplete();
         public void onFlip();
+        public void onSingleFlip();
         public void onCompletion();
-        public void checkForCompletion();
     }
 
     private IGameEventListener gameEvents;
@@ -55,10 +57,11 @@ public class GameBoard extends GridLayout implements View.OnLongClickListener, V
     }
 
     public void init(Context context, AttributeSet attrs, int defStyleAttr) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.GameBoard, defStyleAttr, 0);
         setBackground(getResources().getDrawable(R.drawable.grey_tile));
         tiles = new ArrayList<Tile>();
-        gameEvents = new GameEventListener();
+        if(gameEvents == null)
+
+            gameEvents = new GameEventListener();
 
         setPadding(30, 30, 30, 30);
         setRowCount(size);
@@ -80,10 +83,41 @@ public class GameBoard extends GridLayout implements View.OnLongClickListener, V
             addView(tile, j);
             tiles.add(tile);
             Animation pop = AnimationUtils.loadAnimation(context, R.anim.pop);
-            pop.setStartOffset((j * 100) + 500);
+            pop.setStartOffset((j * (500 / size)) + 500);
             pop.setInterpolator(new OvershootInterpolator());
+            if(j == (size * size) - 1) {
+                pop.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        canClick = false;
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        canClick = true;
+                        gameEvents.initComplete();
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
             tile.startAnimation(pop);
         }
+    }
+
+    public void randomize(int i) {
+        canClick = false;
+        Random r = new Random();
+        for(int j = 0; j < tiles.size(); j++) {
+            Tile tile = tiles.get(j);
+            for(int k = 0; k < r.nextInt(i); k++) {
+                tile.flipTile();
+            }
+        }
+        canClick = true;
     }
 
     public void setColorCount(int i) {
@@ -96,6 +130,10 @@ public class GameBoard extends GridLayout implements View.OnLongClickListener, V
 
     public void setLockState(boolean state) {
         canClick = state;
+    }
+
+    public void setCanSingleFlip(boolean can) {
+        canSingleClick = can;
     }
 
     @Override
@@ -152,10 +190,34 @@ public class GameBoard extends GridLayout implements View.OnLongClickListener, V
 
     @Override
     public boolean onLongClick(View v) {
+        if(v instanceof Tile && canClick && canSingleClick) {
+            int id = v.getId();
+            Tile tile = (Tile) v;
+            tile.setFlipDirection(TileStates.FlipDirection.UNKNOWN);
+            tile.flipTile();
+            gameEvents.onSingleFlip();
+        }
         return true;
     }
 
+    public void setGameEvents(IGameEventListener listener) {
+        gameEvents = listener;
+    }
+
+    public void checkForCompletion() {
+        TileStates.TileColor check = tiles.get(0).getTileColor();
+        for(int i = 0; i < tiles.size(); i++) {
+            if(tiles.get(i).getTileColor() != check)
+                return;
+        }
+        gameEvents.onCompletion();
+    }
+
     public class GameEventListener implements IGameEventListener {
+
+        @Override
+        public void initComplete() {
+        }
 
         @Override
         public void onFlip() {
@@ -163,18 +225,11 @@ public class GameBoard extends GridLayout implements View.OnLongClickListener, V
         }
 
         @Override
-        public void onCompletion() {
-            System.out.println("HELLO");
-        }
+        public void onSingleFlip() { checkForCompletion(); }
 
         @Override
-        public void checkForCompletion() {
-            TileStates.TileColor check = tiles.get(0).getTileColor();
-            for(int i = 0; i < tiles.size(); i++) {
-                if(tiles.get(i).getTileColor() != check)
-                    return;
-            }
-            onCompletion();
+        public void onCompletion() {
         }
+
     }
 }

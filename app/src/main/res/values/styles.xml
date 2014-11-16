@@ -2,6 +2,7 @@
 
     <!-- Base application theme. -->
     <style name="TileFlipTheme" parent="android:Theme.NoTitleBar">
+        <item name="android:background">@color/DayBackground</item>
     </style>
 
 </resources>

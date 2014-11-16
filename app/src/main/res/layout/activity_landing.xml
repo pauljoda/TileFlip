@@ -37,13 +37,13 @@
             android:layout_below="@+id/loadingTile"
             android:layout_centerHorizontal="true"/>
 
-    <Button
+    <davis.tileflip.customviews.TileButton
             style="?android:attr/buttonStyleSmall"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:layout_marginTop="15dp"
             android:text="Skip"
-            android:background="@drawable/grey_tile"
+            android:background="@drawable/blue_button"
             android:id="@+id/skip"
             android:layout_below="@+id/sign_in_button"
             android:layout_centerHorizontal="true"/>

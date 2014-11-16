@@ -1,16 +1,18 @@
 package davis.tileflip.screen;
 
 import android.view.Menu;
+import android.view.View;
 import davis.tileflip.GameScreen;
 import davis.tileflip.R;
 
 import java.util.Calendar;
 
-public class Screen implements IScreen {
+public abstract class Screen implements IScreen {
     protected GameScreen game;
+    public abstract View getRootLayout();
+
     public Screen(GameScreen activity) {
         game = activity;
-        onCreate();
     }
 
     @Override
@@ -18,6 +20,10 @@ public class Screen implements IScreen {
 
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return false;

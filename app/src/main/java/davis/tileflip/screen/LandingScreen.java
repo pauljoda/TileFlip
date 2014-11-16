@@ -1,12 +1,8 @@
 package davis.tileflip.screen;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -15,6 +11,7 @@ import com.google.android.gms.plus.Plus;
 import com.google.example.games.basegameutils.BaseGameUtils;
 import davis.tileflip.GameScreen;
 import davis.tileflip.R;
+import davis.tileflip.customviews.TileButton;
 import davis.tileflip.tile.Tile;
 import davis.tileflip.tile.TileStates;
 
@@ -23,7 +20,7 @@ import java.util.Random;
 public class LandingScreen extends Screen implements IScreen, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static int RC_SIGN_IN = 9001;
     private boolean mResolvingConnectionFailure = false;
-    private boolean mAutoStartSignInFlow = true;
+    private boolean mAutoStartSignInFlow = false;
     private boolean mSignInClicked = false;
 
     public LandingScreen(GameScreen parent) {
@@ -41,17 +38,17 @@ public class LandingScreen extends Screen implements IScreen, GoogleApiClient.Co
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
 
-        View view = game.findViewById(R.id.landingLayout);
+       /* View view = game.findViewById(R.id.landingLayout);
         ValueAnimator colorChange = ObjectAnimator.ofInt(view, "backgroundColor", view.getResources().getColor(R.color.DayBackground), getColorForTime());
         colorChange.setDuration(3000);
         colorChange.setEvaluator(new ArgbEvaluator());
-        colorChange.start();
+        colorChange.start();*/
 
         SignInButton button = (SignInButton)game.findViewById(R.id.sign_in_button);
         button.setOnClickListener(new SignInClicker());
 
-        Button button1 = (Button)game.findViewById(R.id.skip);
-        button1.setOnClickListener(new View.OnClickListener() {
+        TileButton skipButton = (TileButton)game.findViewById(R.id.skip);
+        skipButton.setClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadMainMenu();
@@ -88,7 +85,7 @@ public class LandingScreen extends Screen implements IScreen, GoogleApiClient.Co
     }
 
     public void loadMainMenu() {
-        game.setCurrentScreen(new MainMenuScreen(game));
+        game.setCurrentScreen(new MenuScreen(game));
     }
 
     @Override
@@ -135,5 +132,10 @@ public class LandingScreen extends Screen implements IScreen, GoogleApiClient.Co
                 game.mGoogleApiClient.connect();
             }
         }
+    }
+
+    @Override
+    public View getRootLayout() {
+        return game.findViewById(R.id.landingLayout);
     }
 }

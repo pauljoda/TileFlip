@@ -122,6 +122,11 @@ public class Tile extends ImageView implements View.OnClickListener, View.OnLong
         return tileColor;
     }
 
+    public void incrementColor() {
+        tileColor = tileColor.getNext();
+        updateDrawables();
+    }
+
     public boolean isRotationXEnabled() {
         return mIsRotationXEnabled;
     }
