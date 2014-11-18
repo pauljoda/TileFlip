@@ -61,11 +61,9 @@ public class TileButton extends Button implements View.OnClickListener {
     @Override
     public void onClick(final View v) {
         if(clickListener != null) {
-
             mAnimation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-
                 }
 
                 @Override

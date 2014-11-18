@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_gravity="center"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/DayBackground"
+              android:id="@+id/classicMode"
+              android:orientation="vertical">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Flips: 0"
+            android:layout_margin="5dp"
+            android:id="@+id/classicModeFlipCounter"
+            android:textSize="50sp"
+            android:textColor="@color/grey_black_1000"
+            />
+
+    <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dip"
+            android:layout_weight=".50"
+            android:layout_gravity="center">
+        <davis.tileflip.tile.GameBoard
+                android:layout_margin="15dp"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/classicModeBoard"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
+</LinearLayout>

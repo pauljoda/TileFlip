@@ -1,7 +1,8 @@
-package davis.tileflip.screen;
+package davis.tileflip.activities;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
@@ -9,46 +10,36 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.plus.Plus;
 import com.google.example.games.basegameutils.BaseGameUtils;
-import davis.tileflip.GameScreen;
 import davis.tileflip.R;
 import davis.tileflip.customviews.TileButton;
+import davis.tileflip.helpers.GoogleApiHelper;
 import davis.tileflip.tile.Tile;
 import davis.tileflip.tile.TileStates;
 
 import java.util.Random;
 
-public class LandingScreen extends Screen implements IScreen, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class SignInActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+
     private static int RC_SIGN_IN = 9001;
     private boolean mResolvingConnectionFailure = false;
     private boolean mAutoStartSignInFlow = false;
     private boolean mSignInClicked = false;
+    boolean mExplicitSignOut = false;
+    boolean mInSignInFlow = false;
 
-    public LandingScreen(GameScreen parent) {
-        super(parent);
-    }
 
     @Override
-    public void onCreate() {
-        game.setContentView(R.layout.activity_landing);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sign_in);
 
-        game.mGoogleApiClient = new GoogleApiClient.Builder(game)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
-                .build();
+        GoogleApiHelper.setApiClient(new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN).addApi(Games.API).addScope(Games.SCOPE_GAMES).build());
 
-       /* View view = game.findViewById(R.id.landingLayout);
-        ValueAnimator colorChange = ObjectAnimator.ofInt(view, "backgroundColor", view.getResources().getColor(R.color.DayBackground), getColorForTime());
-        colorChange.setDuration(3000);
-        colorChange.setEvaluator(new ArgbEvaluator());
-        colorChange.start();*/
-
-        SignInButton button = (SignInButton)game.findViewById(R.id.sign_in_button);
+        SignInButton button = (SignInButton)findViewById(R.id.sign_in_button);
         button.setOnClickListener(new SignInClicker());
 
-        TileButton skipButton = (TileButton)game.findViewById(R.id.skip);
-        skipButton.setClick(new View.OnClickListener() {
+        TileButton skipButton = (TileButton)findViewById(R.id.skip);
+        skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadMainMenu();
@@ -56,7 +47,7 @@ public class LandingScreen extends Screen implements IScreen, GoogleApiClient.Co
         });
 
         final Random r = new Random();
-        final Tile tile = (Tile)game.findViewById(R.id.loadingTile);
+        final Tile tile = (Tile)findViewById(R.id.loadingTile);
         tile.setFlipDirection(TileStates.FlipDirection.DOWN);
         tile.setMaxColors(5);
         tile.setOnFlipListener(new Tile.OnFlipListener() {
@@ -85,12 +76,8 @@ public class LandingScreen extends Screen implements IScreen, GoogleApiClient.Co
     }
 
     public void loadMainMenu() {
-        game.setCurrentScreen(new MenuScreen(game));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return false;
+        Intent loadMainMenu = new Intent(this, MainMenuActivity.class);
+        startActivity(loadMainMenu);
     }
 
     @Override
@@ -105,7 +92,6 @@ public class LandingScreen extends Screen implements IScreen, GoogleApiClient.Co
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
         if (mResolvingConnectionFailure) {
             // Already resolving
             return;
@@ -116,9 +102,17 @@ public class LandingScreen extends Screen implements IScreen, GoogleApiClient.Co
             mAutoStartSignInFlow = false;
             mSignInClicked = false;
             mResolvingConnectionFailure = true;
-            if (!BaseGameUtils.resolveConnectionFailure(game, game.mGoogleApiClient, connectionResult, RC_SIGN_IN, game.getResources().getString(R.string.signin_other_error))) {
+            if (!BaseGameUtils.resolveConnectionFailure(this, GoogleApiHelper.getApiClient(), connectionResult, RC_SIGN_IN, getResources().getString(R.string.signin_other_error))) {
                 mResolvingConnectionFailure = false;
             }
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!mInSignInFlow && !mExplicitSignOut) {
+            GoogleApiHelper.getApiClient().connect();
         }
     }
 
@@ -129,13 +123,8 @@ public class LandingScreen extends Screen implements IScreen, GoogleApiClient.Co
             if (view.getId() == R.id.sign_in_button) {
                 // start the asynchronous sign in flow
                 mSignInClicked = true;
-                game.mGoogleApiClient.connect();
+                GoogleApiHelper.getApiClient().connect();
             }
         }
-    }
-
-    @Override
-    public View getRootLayout() {
-        return game.findViewById(R.id.landingLayout);
     }
 }
