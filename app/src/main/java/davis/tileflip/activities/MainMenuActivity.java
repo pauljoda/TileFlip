@@ -29,23 +29,22 @@ public class MainMenuActivity extends Activity {
         mAdView.loadAd(adRequest);
 
         TileButton beginButton = (TileButton)findViewById(R.id.playButton);
-        beginButton.setOnClickListener(new View.OnClickListener() {
+        beginButton.setClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadClassicMode();
             }
         });
 
-        ImageButton google = (ImageButton)findViewById(R.id.imageButton);
-        if(!GoogleApiHelper.getApiClient().isConnected())
+        ImageButton google = (ImageButton)findViewById(R.id.googleButton);
+        if(!(GoogleApiHelper.getApiClient() != null) && !GoogleApiHelper.getApiClient().isConnected())
             google.setVisibility(View.INVISIBLE);
         else {
             google.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     findViewById(R.id.main_menu_root).setVisibility(View.INVISIBLE);
-                    startActivityForResult(Games.Leaderboards.getLeaderboardIntent(GoogleApiHelper.getApiClient(), getResources().getString(R.string.leaderboard_all_time_high_score)), 0);
-                }
+                    startActivityForResult(Games.Leaderboards.getLeaderboardIntent(GoogleApiHelper.getApiClient(), getResources().getString(R.string.leaderboard_all_time_high_score)), 0);                }
             });
             if (Plus.PeopleApi.getCurrentPerson(GoogleApiHelper.getApiClient()) != null) {
                 Person currentPerson = Plus.PeopleApi.getCurrentPerson(GoogleApiHelper.getApiClient());

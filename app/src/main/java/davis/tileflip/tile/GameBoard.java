@@ -28,6 +28,7 @@ public class GameBoard extends GridLayout implements View.OnLongClickListener, V
         public void initComplete();
         public void onFlip();
         public void onSingleFlip();
+        public boolean isComplete();
         public void onCompletion();
     }
 
@@ -221,11 +222,24 @@ public class GameBoard extends GridLayout implements View.OnLongClickListener, V
 
         @Override
         public void onFlip() {
-            checkForCompletion();
+            if(isComplete())
+                onCompletion();
         }
 
         @Override
-        public void onSingleFlip() { checkForCompletion(); }
+        public void onSingleFlip() {
+            if(isComplete())
+                onCompletion();
+        }
+
+        public boolean isComplete() {
+            TileStates.TileColor check = tiles.get(0).getTileColor();
+            for(int i = 0; i < tiles.size(); i++) {
+                if(tiles.get(i).getTileColor() != check)
+                    return false;
+            }
+            return true;
+        }
 
         @Override
         public void onCompletion() {

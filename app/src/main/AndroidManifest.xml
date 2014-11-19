@@ -24,24 +24,35 @@
             android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:theme="@android:style/Theme.Translucent" />
+
         <activity
             android:name="davis.tileflip.activities.SignInActivity"
             android:label="@string/title_activity_sign_in"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="davis.tileflip.activities.MainMenuActivity"
-            android:label="@string/title_activity_main_menu" >
+            android:label="@string/title_activity_main_menu"
+            android:screenOrientation="portrait">
         </activity>
+
         <activity
             android:name="davis.tileflip.activities.ClassicModeActivity"
-            android:label="@string/title_activity_classic_mode" >
+            android:label="@string/title_activity_classic_mode"
+            android:screenOrientation="portrait">
         </activity>
+
+        <activity
+            android:name="davis.tileflip.activities.WinActivity"
+            android:label="@string/title_activity_win"
+            android:screenOrientation="portrait">
+        </activity>
+
     </application>
 
 </manifest>

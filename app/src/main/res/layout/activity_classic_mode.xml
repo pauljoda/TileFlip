@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:custom="http://schemas.android.com/apk/res-auto"
               android:layout_gravity="center"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -7,21 +8,35 @@
               android:id="@+id/classicMode"
               android:orientation="vertical">
 
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Flips: 0"
-            android:layout_margin="5dp"
-            android:id="@+id/classicModeFlipCounter"
-            android:textSize="50sp"
-            android:textColor="@color/grey_black_1000"
-            />
+    <davis.tileflip.customviews.TileButton
+            android:layout_marginTop="15dp"
 
-    <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="0dip"
-            android:layout_weight=".50"
-            android:layout_gravity="center">
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:text="Flips:\n0"
+            android:background="@drawable/blue_button"
+            custom:backgroundDrawable="@drawable/red_button"
+            android:id="@+id/classicModeFlipCount"
+            android:textSize="30sp"
+            android:textColor="@color/grey_black_1000"
+            android:layout_alignParentTop="true"
+            android:layout_alignLeft="@+id/classicModeBoard"
+            android:layout_alignStart="@+id/classicModeBoard"/>
+
+        <davis.tileflip.customviews.TileButton
+                android:layout_marginTop="15dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:text="Single:\n0"
+                android:background="@drawable/blue_button"
+                custom:backgroundDrawable="@drawable/red_button"
+                android:id="@+id/classicModeSingleFlipCounter"
+                android:textSize="30sp"
+                android:textColor="@color/grey_black_1000"
+                android:layout_alignParentTop="true"
+                android:layout_alignRight="@+id/classicModeBoard"
+                android:layout_alignEnd="@+id/classicModeBoard"/>
+
         <davis.tileflip.tile.GameBoard
                 android:layout_margin="15dp"
                 android:gravity="center"
@@ -31,4 +46,3 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"/>
     </RelativeLayout>
-</LinearLayout>

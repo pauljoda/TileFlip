@@ -33,13 +33,19 @@ public class SignInActivity extends Activity implements GoogleApiClient.Connecti
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        GoogleApiHelper.setApiClient(new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN).addApi(Games.API).addScope(Games.SCOPE_GAMES).build());
+        GoogleApiHelper.setApiClient(new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
+                //.addApi(Drive.API).addScope(Drive.SCOPE_APPFOLDER) Causes errors. Will get back to
+                .build());
 
         SignInButton button = (SignInButton)findViewById(R.id.sign_in_button);
         button.setOnClickListener(new SignInClicker());
 
         TileButton skipButton = (TileButton)findViewById(R.id.skip);
-        skipButton.setOnClickListener(new View.OnClickListener() {
+        skipButton.setClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadMainMenu();
